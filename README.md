@@ -1,6 +1,7 @@
+  - run local install script (downloads TF if not installed, runs a `terraform init` and generates new ssh key)
 
-## Setup
+  - create a terraform.tfvars file and add your AWS credentials plus anything from `config.tf` that you want to override (instance region, proxy type)
 
-## Configuration
+  - `terraform apply` (returns list of ip addresses)
 
-## Troubleshooting
+  - when you're done, `terraform destroy`
