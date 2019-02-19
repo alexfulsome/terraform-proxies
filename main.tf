@@ -30,8 +30,9 @@ resource "aws_security_group" "proxies" {
   }
 }
 
-resource "aws_key_pair" "ec2_key" {
-  # identify keypair by name and get path to public key
+resource "aws_key_pair" "key" {
+  key_name = "${var.KEY_PAIR_NAME}"
+  public_key = "${file("${var.PUBLIC_KEY_PATH}")}"
 }
 
 resource "aws_instance" "ProxyNode" {

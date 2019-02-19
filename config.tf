@@ -1,6 +1,10 @@
 variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}
 
+variable "KEY_PAIR_NAME"    { default = "key" }
+variable "PUBLIC_KEY_PATH"  { default = ".ssh/key.pub" }
+variable "PRIVATE_KEY_PATH" { default = ".ssh/key" }
+
 variable "INSTANCE_COUNT"    { default = 5 }
 variable "INSTANCE_TYPE"     { default = "t2.micro" }
 variable "INSTANCE_REGION"   { default = "us-east-1" }
