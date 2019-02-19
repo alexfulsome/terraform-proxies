@@ -12,6 +12,6 @@ variable "INSTANCE_AMI"      { default = "ami-a4dc46db" }
 variable "INSTANCE_USERNAME" { default = "ubuntu" }
 
 variable "PROXY_TYPE"      { default = "http" }
-variable "PROXY_PORT"      { default = 69696 }
+variable "PROXY_PORT"      { default = 46642 }
 variable "PROXY_USER"      { default="" }
 variable "PROXY_PASSWORD"  { default="" }

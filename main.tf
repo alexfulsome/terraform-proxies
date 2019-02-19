@@ -35,6 +35,36 @@ resource "aws_key_pair" "key" {
   public_key = "${file("${var.PUBLIC_KEY_PATH}")}"
 }
 
-resource "aws_instance" "ProxyNode" {
-  # set up connection and provison instances
+resource "aws_instance" "proxy" {
+  count         = "${var.INSTANCE_COUNT}"
+  ami           = "${var.INSTANCE_AMI}"
+  instance_type = "${var.INSTANCE_TYPE}"
+  key_name      = "${aws_key_pair.key.key_name}"
+
+  vpc_security_group_ids = ["${aws_security_group.proxies.id}"]
+  tags {
+    Name = "Proxy ${count.index}"
+  }
+
+  provisioner "file" {
+    source      = "setup.sh"
+    destination = "/home/${var.INSTANCE_USERNAME}/setup.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x ./setup.sh",
+      "sudo ./setup.sh ${var.INSTANCE_USERNAME} ${var.PROXY_TYPE} ${var.PROXY_PORT} ${var.PROXY_USER} ${var.PROXY_PASSWORD}",
+    ]
+  }
+
+  connection {
+    type = "ssh"
+    user = "${var.INSTANCE_USERNAME}"
+    private_key = "${file("${var.PRIVATE_KEY_PATH}")}"
+  }
+}
+
+output "instances" {
+  value = "${aws_instance.proxy.*.public_ip}"
 }
