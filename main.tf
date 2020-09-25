@@ -1,8 +1,8 @@
 provider "aws" {
-  version = "~> 1.22"
-  access_key = "${var.AWS_ACCESS_KEY_ID}"
-  secret_key = "${var.AWS_SECRET_ACCESS_KEY}"
-  region = "${var.INSTANCE_REGION}"
+  version = "~> 3.8.0"
+  access_key = var.AWS_ACCESS_KEY_ID
+  secret_key = var.AWS_SECRET_ACCESS_KEY
+  region = var.INSTANCE_REGION
 }
 
 resource "aws_security_group" "proxies" {
@@ -23,26 +23,26 @@ resource "aws_security_group" "proxies" {
   }
 
   ingress {
-    from_port   = "${var.PROXY_PORT}"
-    to_port     = "${var.PROXY_PORT}"
+    from_port   = var.PROXY_PORT
+    to_port     = var.PROXY_PORT
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_key_pair" "key" {
-  key_name = "${var.KEY_PAIR_NAME}"
-  public_key = "${file("${var.PUBLIC_KEY_PATH}")}"
+  key_name = var.KEY_PAIR_NAME
+  public_key = file(var.PUBLIC_KEY_PATH)
 }
 
 resource "aws_instance" "proxy" {
-  count         = "${var.INSTANCE_COUNT}"
-  ami           = "${var.INSTANCE_AMI}"
-  instance_type = "${var.INSTANCE_TYPE}"
-  key_name      = "${aws_key_pair.key.key_name}"
+  count         = var.INSTANCE_COUNT
+  ami           = var.INSTANCE_AMI
+  instance_type = var.INSTANCE_TYPE
+  key_name      = aws_key_pair.key.key_name
 
-  vpc_security_group_ids = ["${aws_security_group.proxies.id}"]
-  tags {
+  vpc_security_group_ids = [aws_security_group.proxies.id]
+  tags={
     Name = "Proxy ${count.index}"
   }
 
@@ -60,11 +60,12 @@ resource "aws_instance" "proxy" {
 
   connection {
     type = "ssh"
-    user = "${var.INSTANCE_USERNAME}"
-    private_key = "${file("${var.PRIVATE_KEY_PATH}")}"
+    user = var.INSTANCE_USERNAME
+    private_key = file(var.PRIVATE_KEY_PATH)
+    host = self.public_ip
   }
 }
 
 output "instances" {
-  value = "${aws_instance.proxy.*.public_ip}"
+  value = aws_instance.proxy.*.public_ip
 }
